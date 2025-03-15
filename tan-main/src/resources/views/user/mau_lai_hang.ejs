@@ -1,0 +1,180 @@
+<%- include('headerUser.ejs') %>
+
+    <div class="container" style=" margin-bottom: 150px">
+        <div>
+            <h3 class="text-start mt-3 title2">ĐẶT HÀNG </h3>
+            <p> <span class="font-weight">Khách hàng: </span> <span id="ho_ten">
+                    <%= user.ho_ten %>
+                </span> - sdt: <span id="so_dien_thoai">
+                    <%= user.so_dien_thoai %>
+                </span></p>
+            <p> <span class="font-weight"> Địa chỉ: </span> <span id="dia_chi">
+                    <%= user.dia_chi %>
+                </span></p>
+            <textarea id="ghi_chu" class="form-control" style="width: 100%;" placeholder="Ghi chu"></textarea>
+        </div>
+
+        <div>
+            <table style="margin-top: 50px;" class="table table-PW table-hover table-borderless align-middle">
+                <thead class="">
+                    <tr style="background-color: #e9e9e9;">
+                        <th class="text-center">Hình ảnh</th>
+                        <th>Sản phẩm</th>
+                        <th>Mau sắc</th>
+                        <th>Dung lượng</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+
+                    <% if (data && data.length> 0) { %>
+                        <% data.forEach(function (item, index) { %>
+                            <tr>
+                                <td id="chi_tiet_id" hidden>
+                                    <%= item.chi_tiet_id %>
+                                </td>
+                                <td class="text-center">
+                                    <img style="width: 150px; height: 100px;" class="img-thumbnail"
+                                        src="/imgUpload/<%= item.hinh_anh %>">
+                                </td>
+                                <td>
+                                    <%= item.ten_san_pham %>
+                                </td>
+                                <td>
+                                    <%= item.ten_mau_sac %>
+                                </td>
+                                <td>
+                                    <%= item.ten_dung_luong %>
+                                </td>
+                                <td>
+                                    <div>
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                            onclick="decreaseQuantity('<%= item.id %>')">-</button>
+                                        <span id="so_luong_<%= item.id %>">
+                                            <%= item.so_luong %>
+                                        </span>
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                            onclick="increaseQuantity('<%= item.id %>')">+</button>
+                                    </div>
+                                </td>
+                                <td id="gia_ban_<%= item.id %>">
+                                    <%= item.gia_ban %> <span>đ</span>
+                                </td>
+                                <td><span id="tong_gia_<%= item.id %>">
+                                        <%= item.gia_ban * item.so_luong %> <span>đ</span>
+                                    </span>
+                                </td>
+                                <td hidden id="don_mua_hang_id_<%= index + 1 %>">
+                                    <%= item.don_mua_hang_id %>
+                                </td>
+
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7">Không có dữ liệu</td>
+                                    </tr>
+                                    <% } %>
+
+
+                </tbody>
+            </table>
+            <div class="row mt-5">
+                <div class="col-lg-4">
+                    <p class="font-weight">PHƯƠNG THỨC THANH TOÁN</p>
+                    <hr>
+                    <select id="hinh_thuc_thanh_toan" class="form-control">
+                        <option value="1">Thanh toán khi nhận hàng</option>
+                        <option value="2">Thanh toán bằng ngân hàng</option>
+                    </select>
+                </div>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-4">
+                    <p class="font-weight">TỔNG TIỀN</p>
+                    <hr>
+                    <p id="tong_tien_thanh_toan"></p>
+                    <button class="btn btn-primary" onclick="placeOrder()">ĐẶT HÀNG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            calculateTotalPrice(); // Tính tổng tiền khi trang được tải
+        });
+
+        function decreaseQuantity(itemId) {
+            var quantityElement = document.getElementById('so_luong_' + itemId);
+            var currentQuantity = parseInt(quantityElement.innerText);
+            if (currentQuantity > 1) {
+                updateQuantity(itemId, currentQuantity - 1);
+            }
+        }
+
+        function increaseQuantity(itemId) {
+            var quantityElement = document.getElementById('so_luong_' + itemId);
+            var currentQuantity = parseInt(quantityElement.innerText);
+            updateQuantity(itemId, currentQuantity + 1);
+        }
+
+        function updateQuantity(itemId, newQuantity) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById('so_luong_' + itemId).innerText = newQuantity;
+                    updateTotalPrice(itemId); // Cập nhật tổng tiền cho sản phẩm này
+                    calculateTotalPrice(); // Tính lại tổng tiền cho tất cả các sản phẩm
+                }
+            };
+            xhttp.open("POST", "/updateQuantity_mua_lai", true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send(JSON.stringify({ itemId: itemId, newQuantity: newQuantity }));
+        }
+
+        function updateTotalPrice(itemId) {
+            var quantityElement = document.getElementById('so_luong_' + itemId);
+            var priceElement = document.getElementById('gia_ban_' + itemId);
+            var totalPriceElement = document.getElementById('tong_gia_' + itemId);
+
+            var currentQuantity = parseInt(quantityElement.innerText);
+            var price = parseFloat(priceElement.innerText);
+
+            totalPriceElement.innerText = (price * currentQuantity).toFixed(0);
+        }
+
+        function calculateTotalPrice() {
+            var total = 0;
+            var totalPriceElements = document.querySelectorAll('[id^="tong_gia_"]');
+
+            totalPriceElements.forEach(function (element) {
+                total += parseFloat(element.innerText);
+            });
+
+            document.getElementById('tong_tien_thanh_toan').innerText = "Tổng tiền: " + total.toFixed(0);
+        }
+
+        function placeOrder() {
+            var totalPrice = parseFloat(document.getElementById('tong_tien_thanh_toan').innerText);
+            var donMuaHangId = document.getElementById('don_mua_hang_id_1').innerText;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Thông báo cho người dùng rằng đơn hàng đã được đặt thành công
+                    alert('Đơn hàng của bạn đã được đặt thành công!');
+
+                    // Sau khi đặt hàng thành công, bạn có thể thực hiện các hành động khác, ví dụ: chuyển hướng người dùng đến trang cảm ơn
+                    window.location.href = "/order"; // Điều hướng đến trang cảm ơn
+                } else if (this.readyState == 4 && this.status != 200) {
+                    // Thông báo cho người dùng rằng có lỗi khi đặt hàng
+                    alert('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại sau.');
+                }
+            };
+            xhttp.open("POST", "/placeOrder/" + donMuaHangId, true); // Thay đổi đường dẫn API của bạn tương ứng
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send(JSON.stringify({ totalPrice: totalPrice, donMuaHangId: donMuaHangId }));
+        }
+
+    </script>
+    <%- include('footerUser.ejs') %>

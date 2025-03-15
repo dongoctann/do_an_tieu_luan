@@ -1,0 +1,39 @@
+<!-- Import header -->
+<%- include('headerUser.ejs') %>
+<div class="content mt-5">
+    <div class="container" style="margin-top: 20px; margin-bottom: 150px;">
+        <h2 class="text-center"><%= lien_he.title %></h2>
+        <p class="text-center mt-3"><%= lien_he.content %></p>
+        
+        <div class="mt-5">
+            <h4>Thông tin liên hệ</h4>
+            <ul>
+                <li><strong>Địa chỉ:</strong> <%= lien_he.contactInfo.address %></li>
+                <li><strong>Hotline:</strong> <%= lien_he.contactInfo.hotline %></li>
+                <li><strong>Email:</strong> <%= lien_he.contactInfo.email %></li>
+           
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h4>Gửi thông tin liên hệ</h4>
+            <form  action="/lien_he">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Nhập họ và tên" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email của bạn" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Nội dung</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" placeholder="Nhập nội dung cần liên hệ" required></textarea>
+                </div>
+                <button href="#" class="btn btn-primary">Gửi liên hệ</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Import footer -->
+<%- include('footerUser.ejs') %>

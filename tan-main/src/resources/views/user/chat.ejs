@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot với OpenAI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #response { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f8f8f8; }
+  </style>
+</head>
+<body>
+  <h1>Chatbot với OpenAI</h1>
+  <form id="chat-form">
+    <input type="text" name="prompt" id="prompt" placeholder="Nhập tin nhắn của bạn" style="width: 300px; padding: 8px;">
+    <button type="submit">Gửi</button>
+  </form>
+  <div id="response"></div>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      const responseDiv = document.getElementById('response');
+      responseDiv.innerText = 'Đang xử lý...';
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        if (data.reply) {
+          responseDiv.innerText = data.reply;
+        } else {
+          responseDiv.innerText = 'Không nhận được phản hồi từ server.';
+        }
+      } catch (error) {
+        console.error('Lỗi:', error);
+        responseDiv.innerText = 'Lỗi khi gọi API: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

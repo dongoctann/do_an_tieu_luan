@@ -1,0 +1,92 @@
+<%- include('../header.ejs') %>
+    <%- include('../aside.ejs') %>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <h2 class="text-center font-weight mt-2"> Đơn bán hàng</h2>
+            <div class="text-end ">
+                <a href="/admin/xuat-hoa-don/<%= don_mua_hang.id %>" class="btn btn-outline-success mx-5">Xuất hóa
+                    đơn</a>
+            </div>
+            <hr>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p><span class="font-weight">Tên khách hàng:</span>
+                        <%= don_mua_hang.ten_nguoi_mua %>
+                    </p>
+                    <p><span class="font-weight">Số điện thoại:</span>
+                        <%= don_mua_hang.so_dien_thoai %>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><span class="font-weight">Địa chỉ:</span>
+                        <%= don_mua_hang.dia_chi_mua_hang %>
+                    </p>
+                    <p><span class="font-weight">Ghi chú:</span>
+                        <%= don_mua_hang.ghi_chu %>
+                    </p>
+                </div>
+            </div>
+
+            <table style="margin-top: 50px;" class="table table-PW table-hover table-borderless align-middle">
+                <thead class="table-light">
+                    <caption>Danh sách sản phẩm</caption>
+                    <tr style="background-color: #d2d2d2;">
+                        <th>Tên sản phẩm</th>
+                        <th>Màu sắc</th>
+                        <th>Dung lượng</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tong tien</th>
+
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <% if (chi_tiet_hoa_don && chi_tiet_hoa_don.length> 0) { %>
+                        <% chi_tiet_hoa_don.forEach(function (hoadon, index) { %>
+                            <tr>
+                                <td>
+                                    <%= hoadon.ten_san_pham %>
+                                </td>
+                                <td>
+                                    <%= hoadon.ten_mau_sac %>
+                                </td>
+                                <td>
+                                    <%= hoadon.ten_dung_luong %>
+                                </td>
+                                <td>
+                                    <%= hoadon.so_luong %>
+                                </td>
+                                <td>
+                                    <%= hoadon.gia.toLocaleString('vi-VN') %> VND
+                                </td>
+                                <td>
+                                    <%= (hoadon.so_luong * hoadon.gia).toLocaleString('vi-VN') %> VND
+                                </td>
+
+                            </tr>
+                            <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7">Không có dữ liệu</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+
+            <div class="row mt-5">
+                <div class="col-lg-4">
+                    <h6 class="font-weight mx-5"> Hình ảnh giao hàng</h6>
+                    <img class="mx-5" src="/imgUpload/<%= don_mua_hang.hinh_anh_giao_hang %>" width="150" alt="">
+                </div>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-4">
+                    <h4 class="font-weight">Tổng tiền: <%= (don_mua_hang.tong_tien).toLocaleString('vi-VN')%> VND</h4>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- /.content-wrapper -->
+        <%- include('../footer.ejs') %>

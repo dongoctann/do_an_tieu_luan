@@ -1,0 +1,202 @@
+<%- include('headerUser.ejs') %>
+
+<div class="container my-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+      <li class="breadcrumb-item"><a href="/all_product">Sản phẩm</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><%= productDetail.ten_san_pham %></li>
+    </ol>
+  </nav>
+
+  <!-- Thông tin chính sản phẩm -->
+  <div class="row product-detail bg-white shadow-sm p-4 rounded">
+    <div class="col-md-6 text-center">
+      <img style="width: 100%; max-width: 450px; object-fit: contain; transition: transform 0.3s ease;" 
+           src="/imgUpload/<%= productDetail.hinh_anh %>" 
+           alt="<%= productDetail.ten_san_pham %>"
+           class="main-img mb-3">
+      <!-- Ảnh phụ (nếu có) -->
+      <div class="d-flex justify-content-center gap-2">
+        <img src="/imgUpload/<%= productDetail.hinh_anh %>" class="thumbnail-img" style="width: 80px; cursor: pointer;" onclick="changeImage(this)">
+        <img src="/img/macbook.jpg" class="thumbnail-img" style="width: 80px; cursor: pointer;" onclick="changeImage(this)">
+        <img src="/img/asuss.jpg" class="thumbnail-img" style="width: 80px; cursor: pointer;" onclick="changeImage(this)">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h1 class="fw-bold mb-3" style="color: #027b9a;"><%= productDetail.ten_san_pham %></h1>
+      <p class="text-muted mb-2">Giá: <span class="fw-bold text-danger" style="font-size: 1.75rem;"><%= productDetail.gia_ban.toLocaleString() %> đ</span></p>
+      <div class="d-flex align-items-center mb-3">
+        <span class="text-warning me-2"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span>
+        <span class="text-muted">(42 đánh giá)</span>
+      </div>
+
+      <!-- Tùy chọn phiên bản -->
+      <h5 class="fw-bold mb-3" style="color: #333;">Tùy chọn phiên bản</h5>
+      <div class="row g-3">
+        <% if (relatedDetails && relatedDetails.length > 0) { %>
+          <% relatedDetails.forEach(function (item) { %>
+            <a href="/chi_tiet_sp/<%= item.related_chi_tiet_id %>" 
+               class="col-md-4 ds-sp text-center text-decoration-none <%= productDetail.chi_tiet_id === item.related_chi_tiet_id ? 'active_' : '' %>">
+              <div class="p-3 border rounded bg-light shadow-sm transition-all">
+                <p class="mb-1 fw-bold" style="color: #027b9a;"><%= item.ten_mau_sac %></p>
+                <p class="mb-1 text-muted"><%= item.ten_dung_luong %></p>
+                <p class="mb-0 text-danger fw-bold"><%= item.gia_ban.toLocaleString() %> đ</p>
+              </div>
+            </a>
+          <% }); %>
+        <% } else { %>
+          <p class="col-12 text-center text-muted">Không có phiên bản nào khác</p>
+        <% } %>
+      </div>
+
+      <!-- Nút hành động -->
+      <div class="mt-4 d-flex gap-3">
+        <a href="/add_to_cart/<%= productDetail.chi_tiet_id %>" 
+           class="btn btn-outline-primary btn-lg flex-grow-1">
+           <i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ
+        </a>
+        <a href="/dat_hang/<%= productDetail.chi_tiet_id %>" 
+           class="btn btn-success btn-lg flex-grow-1">
+           <i class="fa-solid fa-bolt"></i> Mua ngay
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs thông tin chi tiết -->
+  <div class="mt-5">
+    <ul class="nav nav-tabs" id="productTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Mô tả sản phẩm</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Thông số kỹ thuật</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Đánh giá</button>
+      </li>
+    </ul>
+    <div class="tab-content mt-3 p-4 bg-white shadow-sm rounded" id="productTabContent">
+      <!-- Mô tả sản phẩm -->
+      <div class="tab-pane fade show active" id="description" role="tabpanel">
+        <h4 class="fw-bold mb-3" style="color: #027b9a;">Mô tả sản phẩm</h4>
+        <p><%= productDetail.ten_san_pham %> là một sản phẩm nổi bật với thiết kế sang trọng, hiệu năng mạnh mẽ, phù hợp cho cả công việc và giải trí. Sản phẩm được trang bị màn hình sắc nét, pin lâu, và khả năng xử lý đa nhiệm vượt trội.</p>
+        <ul class="list-unstyled">
+          <li><i class="fas fa-check text-success me-2"></i> Thiết kế mỏng nhẹ, dễ dàng di chuyển</li>
+          <li><i class="fas fa-check text-success me-2"></i> Hiệu suất cao với chip thế hệ mới</li>
+          <li><i class="fas fa-check text-success me-2"></i> Màn hình Full HD sống động</li>
+        </ul>
+      </div>
+      <!-- Thông số kỹ thuật -->
+      <div class="tab-pane fade" id="specs" role="tabpanel">
+        <h4 class="fw-bold mb-3" style="color: #027b9a;">Thông số kỹ thuật</h4>
+        <table class="table table-striped">
+          <tr><th>CPU</th><td>Intel Core i5-11th Gen</td></tr>
+          <tr><th>RAM</th><td>8GB DDR4</td></tr>
+          <tr><th>Ổ cứng</th><td><%= productDetail.ten_dung_luong %></td></tr>
+          <tr><th>Màn hình</th><td>13.3 inch Full HD</td></tr>
+          <tr><th>Màu sắc</th><td><%= productDetail.ten_mau_sac %></td></tr>
+          <tr><th>Pin</th><td>10 giờ</td></tr>
+        </table>
+      </div>
+      <!-- Đánh giá -->
+      <div class="tab-pane fade" id="reviews" role="tabpanel">
+        <h4 class="fw-bold mb-3" style="color: #027b9a;">Đánh giá từ khách hàng</h4>
+        <div class="mb-3">
+          <div class="d-flex align-items-center">
+            <span class="fw-bold me-2">Nguyễn Văn A</span>
+            <span class="text-warning"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span>
+          </div>
+          <p class="text-muted">Sản phẩm rất tốt, giao hàng nhanh, đáng tiền!</p>
+        </div>
+        <div>
+          <div class="d-flex align-items-center">
+            <span class="fw-bold me-2">Trần Thị B</span>
+            <span class="text-warning"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+          </div>
+          <p class="text-muted">Thiết kế đẹp, hiệu năng ổn định, rất hài lòng.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sản phẩm liên quan -->
+  <!-- <div class="mt-5">
+    <h4 class="fw-bold mb-4" style="color: #027b9a;">Sản phẩm liên quan</h4>
+    <div class="row">
+      <% if (relatedDetails && relatedDetails.length > 0) { %>
+        <% relatedDetails.slice(0, 4).forEach(function (item) { %>
+          <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+              <a href="/chi_tiet_sp/<%= item.related_chi_tiet_id %>">
+                <img src="/imgUpload/<%= productDetail.hinh_anh %>" class="card-img-top" style="height: 150px; object-fit: contain; padding: 10px;" alt="<%= item.ten_san_pham %>">
+              </a>
+              <div class="card-body text-center">
+                <h6 class="fw-bold"><%= productDetail.ten_san_pham %></h6>
+                <p class="text-muted"><%= item.ten_mau_sac %> - <%= item.ten_dung_luong %></p>
+                <p class="text-danger fw-bold"><%= item.gia_ban.toLocaleString() %> đ</p>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div> -->
+</div>
+
+<!-- Custom CSS -->
+<style>
+  .product-detail {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  .main-img:hover {
+    transform: scale(1.05);
+  }
+  .thumbnail-img {
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+  }
+  .thumbnail-img:hover, .thumbnail-img.active {
+    border-color: #027b9a;
+  }
+  .ds-sp .active_ .bg-light {
+    border-color: #027b9a !important;
+    background-color: #e6f3f8 !important;
+  }
+  .btn-primary {
+    background-color: #027b9a;
+    border-color: #027b9a;
+  }
+  .btn-primary:hover {
+    background-color: #015f77;
+    border-color: #015f77;
+  }
+  .nav-tabs .nav-link {
+    color: #027b9a;
+    font-weight: 500;
+  }
+  .nav-tabs .nav-link.active {
+    color: #027b9a;
+    border-bottom: 3px solid #027b9a;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<!-- Scripts -->
+<script>
+  function changeImage(element) {
+    const mainImg = document.querySelector('.main-img');
+    mainImg.src = element.src;
+    document.querySelectorAll('.thumbnail-img').forEach(img => img.classList.remove('active'));
+    element.classList.add('active');
+  }
+</script>
+
+<%- include('footerUser.ejs') %>

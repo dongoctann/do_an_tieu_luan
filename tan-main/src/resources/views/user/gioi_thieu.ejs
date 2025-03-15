@@ -1,0 +1,65 @@
+<!-- Import header -->
+<%- include('headerUser.ejs') %>
+
+<!-- Container chính -->
+<div class="container mt-5 mb-5">
+  <!-- Tiêu đề và nội dung giới thiệu chính -->
+  <div class="card shadow-sm mb-5">
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4"><%= gioi_thieu.title %></h2>
+      <p class="card-text text-justify">
+        <%= gioi_thieu.content %>
+      </p>
+    </div>
+  </div>
+  
+  <!-- Nội dung bổ sung giới thiệu -->
+  <div class="mb-5">
+    <div class="content" id="content">
+      <p class="lead">
+        Máy tính laptop là thiết bị công nghệ được rất nhiều người dùng yêu thích và chọn lựa nhờ vào tính tiện lợi, đáp ứng tốt nhu cầu học tập, làm việc và giải trí của nhiều người dùng. Hiện nay, các thương hiệu máy tính xách tay không ngừng cải tiến sản phẩm để mang lại một dòng laptop mini giá rẻ, mỏng nhẹ, có hiệu năng mạnh mẽ và thời lượng pin tốt với mức giá vô cùng hợp lý.
+      </p>
+      <p class="lead">
+        Laptop (máy tính xách tay) - Phục vụ công việc, học tập, giải trí. Với thiết kế sang trọng, nhỏ gọn và tiện lợi cùng cấu hình mạnh mẽ, máy tính xách tay mang đến trải nghiệm mượt mà. Giá thành phải chăng và nhiều ưu đãi vượt trội đã giúp sản phẩm trở thành sự lựa chọn hoàn hảo cho nhiều người dùng.
+      </p>
+    </div>
+    <!-- Nút Xem thêm/Thu gọn -->
+    <button id="showMoreBtn" class="btn btn-outline-secondary btn-sm mt-3" onclick="showMore()">Xem thêm</button>
+    <!-- Nội dung đầy đủ được ẩn đi ban đầu -->
+    <div id="fullContent" class="mt-3" style="display: none;">
+      <p>
+        <strong>Lợi ích khi sử dụng laptop là gì?</strong><br>
+        So với các sản phẩm điện tử hiện đại khác, laptop nằm ở phân khúc giá cao hơn nhưng vẫn thu hút đông đảo người dùng bởi những lợi ích nổi bật như:
+      </p>
+      <p>
+        <strong>Hệ điều hành tối ưu:</strong> Các loại laptop hiện nay được trang bị hệ điều hành phù hợp, được tối ưu hiệu quả, cùng với cấu hình mạnh mẽ và nhiều mức thiết kế khác nhau giúp xử lý mọi công việc.
+      </p>
+      <p>
+        <strong>Đầy đủ phụ kiện đi kèm:</strong> Laptop thường được trang bị bàn phím, chuột và các phụ kiện tiện lợi giúp công việc hoàn thiện nhanh chóng.
+      </p>
+      <p>
+        <strong>Dễ dàng nâng cấp:</strong> Bạn có thể dễ dàng sửa chữa, nâng cấp laptop nhằm cải thiện hiệu năng và đáp ứng tốt hơn quá trình sử dụng.
+      </p>
+      <p>
+        <strong>Lưu trữ được nhiều dữ liệu:</strong> Với dung lượng ổ cứng lớn, laptop giúp lưu trữ nhiều dữ liệu một cách nhanh chóng và hiệu quả.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showMore() {
+    var fullContent = document.getElementById("fullContent");
+    var btn = document.getElementById("showMoreBtn");
+    if (fullContent.style.display === "none" || fullContent.style.display === "") {
+      fullContent.style.display = "block";
+      btn.innerText = "Thu gọn";
+    } else {
+      fullContent.style.display = "none";
+      btn.innerText = "Xem thêm";
+    }
+  }
+</script>
+
+<!-- Import footer -->
+<%- include('footerUser.ejs') %>

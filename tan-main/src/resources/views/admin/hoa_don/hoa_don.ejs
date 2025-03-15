@@ -1,0 +1,143 @@
+<%- include('../header.ejs') %>
+<%- include('../aside.ejs') %>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <div class="row">
+        <!-- Button trigger modal -->
+        <div class="col-md-6">
+            <a href="/admin/them_hoa_don" class="btn btn-outline-primary mt-2 mx-2">
+                Thêm hóa đơn
+            </a>
+        </div>
+        <div class="col-md-6 mt-2 ">
+            <form action="/admin/search_hoa_don" id="combined-form" method="get" class="sidebar-form_1 mx-2">
+                <div class="input-group mb-3" style="width: 80%;">
+                    <input type="text" name="name" class="form-control"
+                        placeholder="Nhập tên khách hàng bạn muốn tìm kiếm" aria-label="Recipient's username"
+                        aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i
+                            class="fa fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <table style="margin-top: 50px;" class="table table-PW table-hover table-borderless align-middle">
+        <thead class="table-light">
+            <caption>Danh sách hóa đơn</caption>
+            <tr style="background-color: #e9e9e9;">
+                <th>STT</th>
+                <th>Mã hóa đơn</th>
+                <th>Tên khách hàng</th>
+                <th>Ngày mua</th>
+                <th>Thanh toán</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th>NV tạo</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <% if (data && data.length > 0) { %>
+                <% data.forEach(function (hoadon, index) { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= hoadon.id %></td>
+                        <td><%= hoadon.ten_nguoi_mua %></td>
+                        <td><%= new Intl.DateTimeFormat('vi-VN').format(new Date(hoadon.ngay_tao)) %></td>
+                        <td style="font-size: 13px;">
+                            <% if (hoadon.hinh_thuc_thanh_toan === 1) { %>
+                                Thanh toán khi nhận hàng
+                            <% } else if (hoadon.hinh_thuc_thanh_toan === 2) { %>
+                                Thanh toán bằng ngân hàng liên kết
+                            <% } else { %>
+                                Phương thức thanh toán không xác định
+                            <% } %>
+                        </td>
+                        <td><%= hoadon.tong_tien.toLocaleString('vi-VN') %>VND</td>
+                        <td id="trang_thai_<%= hoadon.id %>">
+                            <% if (hoadon.trang_thai === 1) { %>
+                                <button class="btn btn-outline-secondary btn-sm">Chờ xác nhận</button>
+                            <% } else if (hoadon.trang_thai === 2) { %>
+                                <button class="btn btn-outline-primary btn-sm">Đã xác nhận</button>
+                            <% } else if (hoadon.trang_thai === 3) { %>
+                                <button class="btn btn-outline-warning btn-sm">Đang giao</button>
+                            <% } else if (hoadon.trang_thai === 4) { %>
+                                <button class="btn btn-outline-info btn-sm">Đã giao</button>
+                            <% } else if (hoadon.trang_thai === 6) { %>
+                                <button class="btn btn-outline-success btn-sm">Thành công</button>
+                            <% } else if (hoadon.trang_thai === 5) { %>
+                                <button class="btn btn-outline-danger btn-sm">Đã hủy</button>
+                            <% } %>
+                        </td>
+                        <td><%= hoadon.ten_nhan_vien %></td>
+                        <td>
+                            <div class="d-flex">
+                                <!-- Hiển thị nút chỉnh sửa và xóa cho tất cả người dùng -->
+                                <a href="/admin/edit_hoa_don/<%= hoadon.id %>"
+                                    class="btn btn-outline-success btn-sm mx-1"><i
+                                        class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="#" onclick="confirmDelete('<%= hoadon.id %>')"
+                                    class="btn btn-outline-danger btn-sm mx-1"><i
+                                        class="fa-solid fa-trash"></i></a>
+                                <a href="/admin/chi_tiet_hoa_don/<%= hoadon.id %>"
+                                    class="btn btn-outline-info btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="7">Không có dữ liệu</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <!-- Hiển thị phân trang -->
+    <div class="pagination text-end">
+        <% if (pageCount > 1) { %>
+            <ul>
+                <% if (currentPage > 1) { %>
+                    <li>
+                        <a href="?page=1">Trang đầu</a>
+                    </li>
+                    <li>
+                        <a href="?page=<%= currentPage - 1 %>"><i class="fa-solid fa-angle-left"></i></a>
+                    </li>
+                <% } %>
+                <% let startPage = Math.max(1, currentPage - 2); %>
+                <% let endPage = Math.min(pageCount, startPage + 4); %>
+                <% if (startPage > 1) { %>
+                    <li><span>...</span></li>
+                <% } %>
+                <% for (let i = startPage; i <= endPage; i++) { %>
+                    <li>
+                        <a href="?page=<%= i %>" <% if (i === currentPage) { %>class="active_page"<% } %>>
+                            <%= i %>
+                        </a>
+                    </li>
+                <% } %>
+                <% if (currentPage < pageCount) { %>
+                    <% if (endPage < pageCount) { %>
+                        <li><span>...</span></li>
+                    <% } %>
+                    <li>
+                        <a href="?page=<%= currentPage + 1 %>"><i class="fa-solid fa-angle-right"></i></a>
+                    </li>
+                    <li>
+                        <a href="?page=<%= pageCount %>">Trang cuối</a>
+                    </li>
+                <% } %>
+            </ul>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
+            window.location.href = "/admin/xoa_hoa_don/" + id;
+        }
+    }
+</script>
+
+<%- include('../footer.ejs') %>

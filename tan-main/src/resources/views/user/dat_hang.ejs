@@ -1,0 +1,159 @@
+<%- include('headerUser.ejs') %>
+
+<div class="container" style="margin-bottom: 150px">
+    <div>
+        <h3 class="text-start mt-3 title2">ĐẶT HÀNG </h3>
+        <p>
+            <span class="font-weight">Khách hàng: </span>
+            <span id="ho_ten"><%= user.ho_ten %></span>
+            <span>- sdt:</span>
+            <span id="so_dien_thoai"><%= user.so_dien_thoai %></span>
+        </p>
+        <p>
+            <span class="font-weight">Địa chỉ: </span>
+            <span id="dia_chi"><%= user.dia_chi %></span>
+        </p>
+        <textarea class="form-control" id="ghi_chu" style="width: 100%;" placeholder="Ghi chú"></textarea>
+    </div>
+
+    <div>
+        <table style="margin-top: 50px;" class="table table-PW table-striped table-hover table-borderless align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center">Hình ảnh</th>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr>
+                    <td class="text-center">
+                        <img style="width: 150px; height: 100px;" class="img-thumbnail" src="/imgUpload/<%= product_datHang.hinh_anh %>">
+                    </td>
+                    <td><%= product_datHang.ten_san_pham %></td>
+                    <!-- Hiển thị giá đã định dạng -->
+                    <td id="gia_ban">
+                        <%= product_datHang.gia_ban.toLocaleString('vi-VN') %> <span>VND</span>
+                    </td>
+                    <td>
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="decreaseQuantity()">-</button>
+                            <span id="so_luong"><%= so_luong %></span>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <span id="tong_gia">
+                            <%= (product_datHang.gia_ban * so_luong).toLocaleString('vi-VN') %> <span>VND</span>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row mt-5">
+            <div class="col-lg-4">
+                <p class="font-weight">PHƯƠNG THỨC THANH TOÁN</p>
+                <hr>
+                <select id="hinh_thuc_thanh_toan" class="form-control">
+                    <option value="1">Thanh toán khi nhận hàng</option>
+                    <option value="2">Thanh toán bằng ngân hàng</option>
+                </select>
+            </div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+                <p class="font-weight">TỔNG TIỀN</p>
+                <hr>
+                <p>
+                    <span>Tổng tiền thanh toán: </span>
+                    <span id="tong_tien_thanh_toan">
+                        <%= (product_datHang.gia_ban * so_luong).toLocaleString('vi-VN') %>
+                    </span> <span>VND</span>
+                </p>
+                <button class="btn btn-primary" onclick="datHang()">ĐẶT HÀNG</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lưu giá gốc dưới dạng số
+    var gia_ban = parseFloat('<%= product_datHang.gia_ban %>');
+    var so_luong_element = document.getElementById("so_luong");
+    var tong_gia_element = document.getElementById("tong_gia");
+    var tong_tien_thanh_toan_element = document.getElementById("tong_tien_thanh_toan");
+
+    function updateTotalPrice() {
+        var so_luong = parseInt(so_luong_element.innerText);
+        var tong_gia = gia_ban * so_luong;
+        // Định dạng hiển thị: thêm dấu phẩy, định dạng tiền và chữ "VND"
+        tong_gia_element.innerText = tong_gia.toLocaleString('vi-VN') + " VND";
+        tong_tien_thanh_toan_element.innerText = tong_gia.toLocaleString('vi-VN');
+    }
+
+    function decreaseQuantity() {
+        var so_luong = parseInt(so_luong_element.innerText);
+        if (so_luong > 1) {
+            so_luong--;
+            so_luong_element.innerText = so_luong;
+            updateTotalPrice();
+        }
+    }
+
+    function increaseQuantity() {
+        var so_luong = parseInt(so_luong_element.innerText);
+        so_luong++;
+        so_luong_element.innerText = so_luong;
+        updateTotalPrice();
+    }
+
+    function datHang() {
+        var hoTen = document.getElementById("ho_ten").innerText;
+        var soDienThoai = document.getElementById("so_dien_thoai").innerText;
+        var diaChi = document.getElementById("dia_chi").innerText;
+        var ghiChu = document.getElementById("ghi_chu").value;
+        var hinhThucThanhToan = document.getElementById("hinh_thuc_thanh_toan").value;
+        var soLuong = parseInt(so_luong_element.innerText);
+        // Tính lại các giá trị dựa trên số lượng và giá gốc
+        var tongGia = soLuong * gia_ban;
+        var tong_tien_thanh_toan = tongGia;
+        var san_pham_id = '<%= product_datHang.chi_tiet_id %>';
+
+        fetch('/dat_hang2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                hoTen: hoTen,
+                soDienThoai: soDienThoai,
+                diaChi: diaChi,
+                ghiChu: ghiChu,
+                hinhThucThanhToan: hinhThucThanhToan,
+                soLuong: soLuong,
+                tongGia: tongGia,
+                giaBan: gia_ban,
+                tong_tien_thanh_toan: tong_tien_thanh_toan,
+                san_pham_id: san_pham_id,
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Có lỗi khi đặt hàng');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Đặt hàng thành công: ', data);
+            alert('Đặt hàng thành công!');
+            window.location.href = '/order';
+        })
+        .catch(error => {
+            console.error('Đặt hàng thất bại: ', error);
+            alert('Đặt hàng thất bại!');
+        });
+    }
+</script>
+
+<%- include('footerUser.ejs') %>
