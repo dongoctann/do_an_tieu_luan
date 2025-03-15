@@ -1,10 +1,11 @@
-Tiểu luận tốt nghiệp - CNTT
-Học kỳ: 2, Năm học: 2024-2025
+# Tiểu luận tốt nghiệp - CNTT
 
-Mã học phần: CT501
+**Học kỳ**: 2, **Năm học**: 2024-2025
 
-MSSV: B2014697
+**Mã học phần**: CT501
 
-Họ tên: Đỗ Ngọc Tấn
+**MSSV**: B2014697
 
-Tên đề tài: Website bán hàng Laptop
+**Họ tên**: Đỗ Ngọc Tấn
+
+**Tên đề tài**: Website bán hàng Laptop
